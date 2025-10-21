@@ -1,0 +1,76 @@
+# Salesforce specific
+.sfdx/
+.sf/
+.localdevserver/
+.vscode/settings.json
+.project
+.settings/
+.classpath
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if using)
+node_modules/
+npm-debug.log*
+
+# IDE
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/launch.json
+.vscode/tasks.json
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Test results
+coverage/
+test-results/
+
+# Salesforce DX
+.sfdx/
+.localdevserver/
+
+# Certificates and keys
+*.key
+*.pem
+*.cert
+
+# Environment files
+.env
+.env.local
+
+# Build artifacts
+dist/
+build/
+target/
+
+# Metadata that changes frequently
+**/profiles/*.xml
+!**/profiles/Admin.profile-meta.xml
+
+# Package files
+*.zip
+*.tar.gz
+
+# Scratch Org files (optional - uncomment if needed)
+# config/project-scratch-def.json
+
+# Data files (optional - uncomment to exclude data)
+# Data/
+# *.csv
+# *.xlsx
+
+# Specific file extensions to ignore (examples)
+# *.tmp
+# *.cache

@@ -1,0 +1,14 @@
+Active__c,Domain__c,Id,Name,Primary_Email__c
+,,001Dp000004BxCKIA0,Sample Account for Entitlements,
+Yes,edge.com,001Dp00000CbkaQIAR,Edge Communications,rose@edge.com
+,burlington.com,001Dp00000CbkaRIAR,Burlington Textiles Corp of America,jrogers@burlington.com
+Yes,pyramid.net,001Dp00000CbkaSIAR,Pyramid Construction Inc.,pat@pyramid.net
+Yes,,001Dp00000CbkaTIAR,Gmail Generic Example,ayoung@gmail.com
+Yes,grandhotels.com,001Dp00000CbkaUIAR,Grand Hotels & Resorts Ltd,barr_tim@grandhotels.com
+Yes,uog.com,001Dp00000CbkaVIAR,United Oil & Gas Corp.,spavlova@uog.com
+Yes,,001Dp00000CbkaWIAR,Express Logistics and Transport,b.levy@gmail.com
+Yes,uofa.edu,001Dp00000CbkaXIAR,University of Arizona,jane_gray@uoa.edu
+Yes,uog.com,001Dp00000CbkaYIAR,"United Oil & Gas, UK",ajames@uog.com
+Yes,uoga.com,001Dp00000CbkaZIAR,"United Oil & Gas, Singapore",tripley@uog.com
+Yes,genepoint.com,001Dp00000CbkaaIAB,GenePoint,efrank@genepoint.com
+,,001Dp00000CbkabIAB,Yahoo Generic Example,jllorrac@yahoo.com

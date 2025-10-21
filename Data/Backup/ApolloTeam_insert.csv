@@ -1,0 +1,31 @@
+APOLLO_ACCOUNT_ID__C,APOLLO_TEAM_ID__C,DOMAIN__C,ID,LICENSES_ACTIVATED__C,LICENSES_PROVISIONED__C,NAME,PLAN_TYPE__C,STATUS__C,SUBSCRIPTION_END_DATE__C,SUBSCRIPTION_START_DATE__C
+001Dp00000CbkaaIAB,2,genepoint.com,,,,Genepoint Team2,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,3,genepoint.com,,,,Genepoint Team3,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,4,genepoint.com,,,,Genepoint Team4,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,5,genepoint.com,,,,Genepoint Team5,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,6,genepoint.com,,,,Genepoint Team6,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,7,genepoint.com,,,,Genepoint Team7,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,8,genepoint.com,,,,Genepoint Team8,Free,Free,,4/18/2023
+001Dp00000CbkaaIAB,9,genepoint.com,,,,Genepoint Team9,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,10,genepoint.com,,,,Genepoint Team10,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,11,genepoint.com,,,,Genepoint Team11,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,12,genepoint.com,,,,Genepoint Team12,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,13,genepoint.com,,,,Genepoint Team13,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,14,genepoint.com,,,,Genepoint Team14,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,15,genepoint.com,,,,Genepoint Team15,Basic,Trial,,4/18/2023
+001Dp00000CbkaaIAB,16,genepoint.com,,,,Genepoint Team16,Professional,Trial,,4/18/2023
+001Dp00000CbkaaIAB,17,genepoint.com,,,,Genepoint Team17,Professional,Trial,,4/18/2023
+001Dp00000CbkaaIAB,18,genepoint.com,,,,Genepoint Team18,Professional,Trial,,4/18/2023
+001Dp00000CbkaaIAB,19,genepoint.com,,,,Genepoint Team19,Professional,Paying,,4/1/2023
+001Dp00000CbkaaIAB,20,genepoint.com,,,,Genepoint Team20,Professional,Paying,,4/1/2023
+001Dp00000CbkaaIAB,21,genepoint.com,,,,Genepoint Team21,Professional,Paying,,4/1/2023
+001Dp00000CbkaaIAB,22,genepoint.com,,,,Genepoint Team22,Professional,Paying,,4/1/2023
+001Dp00000CbkaaIAB,23,genepoint.com,,,,Genepoint Team23,Organization,Paying,,4/1/2023
+001Dp00000CbkaaIAB,24,genepoint.com,,,,Genepoint Team24,Organization,Paying,,4/1/2023
+001Dp00000CbkaaIAB,25,genepoint.com,,,,Genepoint Team25,Organization,Paying,,4/1/2023
+001Dp00000CbkaaIAB,26,genepoint.com,,,,Genepoint Team26,Organization,Paying,,4/1/2023
+001Dp00000CbkaaIAB,27,genepoint.com,,,,Genepoint Team27,Organization,Paying,,4/1/2023
+001Dp00000CbkaaIAB,28,genepoint.com,,,,Genepoint Team28,Organization,Churned,,3/1/2022
+001Dp00000CbkaaIAB,29,genepoint.com,,,,Genepoint Team 29,Organization,Churned,,3/1/2022
+001Dp00000CbkaQIAR,30,edge.com,,,,Edge Team30,Free,Free,,4/18/2023
+001Dp00000CbkaQIAR,31,edge.com,,,,Edge Team31,Basic,Trial,,4/18/2023

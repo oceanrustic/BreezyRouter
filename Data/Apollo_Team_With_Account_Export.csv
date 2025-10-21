@@ -1,0 +1,31 @@
+Apollo_Account_ID__c,Apollo_Team_ID__c,Domain__c,Id,Name,Plan_Type__c,Primary_Email__c,Status__c
+001Dp00000CbkaQIAR,30,edge.com,a00Dp000008TtwKIAS,Edge Team30,Free,rose@edge.com,Free
+001Dp00000CbkaQIAR,31,edge.com,a00Dp000008TtwLIAS,Edge Team31,Basic,rose@edge.com,Trial
+,5,genepoint.com,a00Dp000008TtvvIAC,Genepoint Team5,Free,,Free
+001Dp00000CbkaaIAB,6,genepoint.com,a00Dp000008TtvwIAC,Genepoint Team6,Free,efrank@genepoint.com,Free
+001Dp00000CbkaaIAB,7,genepoint.com,a00Dp000008TtvxIAC,Genepoint Team7,Free,efrank@genepoint.com,Free
+001Dp00000CbkaaIAB,8,genepoint.com,a00Dp000008TtvyIAC,Genepoint Team8,Free,efrank@genepoint.com,Free
+001Dp00000CbkaaIAB,9,genepoint.com,a00Dp000008TtvzIAC,Genepoint Team9,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,10,genepoint.com,a00Dp000008Ttw0IAC,Genepoint Team10,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,11,genepoint.com,a00Dp000008Ttw1IAC,Genepoint Team11,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,12,genepoint.com,a00Dp000008Ttw2IAC,Genepoint Team12,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,13,genepoint.com,a00Dp000008Ttw3IAC,Genepoint Team13,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,14,genepoint.com,a00Dp000008Ttw4IAC,Genepoint Team14,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,15,genepoint.com,a00Dp000008Ttw5IAC,Genepoint Team15,Basic,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,16,genepoint.com,a00Dp000008Ttw6IAC,Genepoint Team16,Professional,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,17,genepoint.com,a00Dp000008Ttw7IAC,Genepoint Team17,Professional,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,18,genepoint.com,a00Dp000008Ttw8IAC,Genepoint Team18,Professional,efrank@genepoint.com,Trial
+001Dp00000CbkaaIAB,19,genepoint.com,a00Dp000008Ttw9IAC,Genepoint Team19,Professional,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,20,genepoint.com,a00Dp000008TtwAIAS,Genepoint Team20,Professional,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,21,genepoint.com,a00Dp000008TtwBIAS,Genepoint Team21,Professional,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,22,genepoint.com,a00Dp000008TtwCIAS,Genepoint Team22,Professional,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,23,genepoint.com,a00Dp000008TtwDIAS,Genepoint Team23,Organization,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,24,genepoint.com,a00Dp000008TtwEIAS,Genepoint Team24,Organization,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,25,genepoint.com,a00Dp000008TtwFIAS,Genepoint Team25,Organization,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,26,genepoint.com,a00Dp000008TtwGIAS,Genepoint Team26,Organization,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,27,genepoint.com,a00Dp000008TtwHIAS,Genepoint Team27,Organization,efrank@genepoint.com,Paying
+001Dp00000CbkaaIAB,28,genepoint.com,a00Dp000008TtwIIAS,Genepoint Team28,Organization,efrank@genepoint.com,Churned
+001Dp00000CbkaaIAB,29,genepoint.com,a00Dp000008TtwJIAS,Genepoint Team 29,Organization,efrank@genepoint.com,Churned
+001Dp00000CbkaaIAB,4,genepoint.com,a00Dp000008TtvuIAC,Genepoint Team4,Free,efrank@genepoint.com,Free
+001Dp00000CbkaaIAB,2,genepoint.com,a00Dp000008TtvsIAC,Genepoint Team2,Free,efrank@genepoint.com,Free
+001Dp00000CbkaaIAB,3,genepoint.com,a00Dp000008TtvtIAC,Genepoint Team3,Free,efrank@genepoint.com,Free
