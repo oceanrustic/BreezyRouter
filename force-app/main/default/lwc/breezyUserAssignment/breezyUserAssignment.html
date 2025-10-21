@@ -1,0 +1,190 @@
+<template>
+    <lightning-card title="User Assignment" icon-name="standard:user">
+        <div slot="actions">
+            <template if:true={routerName}>
+                <span class="slds-text-heading_small slds-m-right_medium">
+                    Router: <strong>{routerName}</strong>
+                </span>
+            </template>
+        </div>
+        
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- Search and Filter Section -->
+            <div class="slds-grid slds-wrap slds-gutters_small slds-m-bottom_medium">
+                <!-- Search Box -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-input
+                        type="search"
+                        label="Search Users"
+                        placeholder="Name, email, or username..."
+                        value={searchTerm}
+                        onchange={handleSearchChange}>
+                    </lightning-input>
+                </div>
+                
+                <!-- Role Filter -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-combobox
+                        label="Filter by Role"
+                        value={selectedRoleId}
+                        options={roleOptions}
+                        onchange={handleRoleChange}>
+                    </lightning-combobox>
+                </div>
+                
+                <!-- Profile Filter -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-combobox
+                        label="Filter by Profile"
+                        value={selectedProfileId}
+                        options={profileOptions}
+                        onchange={handleProfileChange}>
+                    </lightning-combobox>
+                </div>
+                
+                <!-- Department Filter -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-input
+                        type="text"
+                        label="Filter by Department"
+                        value={selectedDepartment}
+                        onchange={handleDepartmentChange}>
+                    </lightning-input>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="slds-grid slds-gutters_small slds-m-bottom_medium">
+                <div class="slds-col">
+                    <lightning-button
+                        label="Clear Filters"
+                        onclick={handleClearFilters}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                </div>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button
+                        label={addButtonLabel}
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={handleAddUsers}
+                        disabled={isNoSelection}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    <lightning-button
+                        label={removeButtonLabel}
+                        variant="destructive"
+                        icon-name="utility:delete"
+                        onclick={handleRemoveUsers}
+                        disabled={isNoSelection}>
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            
+            <!-- User Data Table -->
+            <template if:true={showTables}>
+                <template if:true={hasUsers}>
+                    <lightning-datatable
+                        key={usersTableKey}
+                        key-field="id"
+                        data={filteredUsers}
+                        columns={columns}
+                        onrowselection={handleRowSelection}
+                        max-row-selection="50">
+                    </lightning-datatable>
+                </template>
+            </template>
+            
+            <!-- No Users Message -->
+            <template if:false={hasUsers}>
+                <div class="slds-text-align_center slds-m-vertical_large">
+                    <lightning-icon icon-name="standard:user" size="large"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-top_medium">No Users Found</p>
+                    <p class="slds-text-color_weak slds-m-top_small">
+                        Try adjusting your search or filter criteria
+                    </p>
+                </div>
+            </template>
+            
+            <!-- Help Text -->
+            <div class="slds-m-top_medium slds-text-color_weak slds-text-body_small">
+                <p>
+                    <lightning-icon icon-name="utility:info" size="xx-small"></lightning-icon>
+                    Select users from the table above to add them to the router. 
+                    Users marked "In Router" are already assigned.
+                </p>
+            </div>
+            
+            <!-- Current Members Section -->
+            <div class="slds-m-top_large">
+                <div class="slds-border_top slds-p-top_medium">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                        <div class="slds-col">
+                            <h3 class="slds-text-heading_medium">
+                                <lightning-icon icon-name="standard:groups" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Current Router Members ({currentMemberCount})
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button
+                                label="Refresh Members"
+                                icon-name="utility:refresh"
+                                onclick={handleRefreshMembers}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Members Section Content -->
+                    <template if:true={showTables}>
+                        <!-- Current Members Table -->
+                        <template if:true={hasCurrentMembers}>
+                            <lightning-datatable
+                                key={membersTableKey}
+                                key-field="id"
+                                data={currentMembers}
+                                columns={memberColumns}
+                                onrowselection={handleMemberRowSelection}
+                                max-row-selection="50">
+                            </lightning-datatable>
+                            
+                            <!-- Remove Button -->
+                            <div class="slds-m-top_small">
+                                <lightning-button
+                                    label={removeMembersButtonLabel}
+                                    variant="destructive"
+                                    icon-name="utility:delete"
+                                    onclick={handleRemoveMembers}
+                                    disabled={isNoMemberSelection}>
+                                </lightning-button>
+                            </div>
+                        </template>
+                        
+                        <!-- No Members Message -->
+                        <template if:false={hasCurrentMembers}>
+                            <div class="slds-text-align_center slds-m-vertical_medium">
+                                <lightning-icon icon-name="standard:empty" size="large"></lightning-icon>
+                                <p class="slds-text-heading_small slds-m-top_medium">No Members Yet</p>
+                                <p class="slds-text-color_weak slds-m-top_small">
+                                    Add users from the table above to get started
+                                </p>
+                            </div>
+                        </template>
+                    </template>
+                    
+                    <!-- Loading Spinner for Table Refresh -->
+                    <template if:false={showTables}>
+                        <div class="slds-text-align_center slds-m-vertical_medium">
+                            <lightning-spinner alternative-text="Refreshing..." size="small"></lightning-spinner>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>
+

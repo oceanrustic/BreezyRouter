@@ -1,0 +1,27 @@
+.slds-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9001;
+}
+
+.slds-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9000;
+}
+
+.slds-modal__container {
+    z-index: 9002;
+}
+
+.slds-modal_large .slds-modal__container {
+    max-width: 90%;
+    width: 90%;
+}
+

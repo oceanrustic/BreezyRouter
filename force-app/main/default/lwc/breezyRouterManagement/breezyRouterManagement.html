@@ -1,0 +1,202 @@
+<template>
+    <lightning-card title="BreezyRouter Management" icon-name="custom:custom88">
+        <!-- Header Section with Search and Create Button -->
+        <div slot="actions">
+            <lightning-button 
+                label="Create Router" 
+                icon-name="utility:add"
+                variant="brand"
+                onclick={handleCreateRouter}>
+            </lightning-button>
+        </div>
+        
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- Search Box -->
+            <div class="slds-m-bottom_medium">
+                <lightning-input
+                    type="search"
+                    label="Search Routers"
+                    placeholder="Search by name or description..."
+                    value={searchTerm}
+                    onchange={handleSearchChange}>
+                </lightning-input>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            
+            <!-- Data Table -->
+            <template if:true={hasRouters}>
+                <lightning-datatable
+                    key-field="id"
+                    data={filteredRouters}
+                    columns={columns}
+                    hide-checkbox-column
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+            
+            <!-- No Routers Message -->
+            <template if:false={hasRouters}>
+                <div class="slds-text-align_center slds-m-vertical_large">
+                    <lightning-icon icon-name="custom:custom88" size="large"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-top_medium">No Routers Found</p>
+                    <p class="slds-text-color_weak slds-m-top_small">
+                        Get started by creating your first router
+                    </p>
+                    <lightning-button 
+                        label="Create Router" 
+                        variant="brand"
+                        class="slds-m-top_medium"
+                        onclick={handleCreateRouter}>
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+    
+    <!-- Create/Edit Router Modal -->
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">{modalTitle}</h2>
+                </header>
+                
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-input
+                        label="Router Name"
+                        value={routerName}
+                        onchange={handleNameChange}
+                        required>
+                    </lightning-input>
+                    
+                    <lightning-textarea
+                        label="Description"
+                        value={routerDescription}
+                        onchange={handleDescriptionChange}
+                        max-length="255"
+                        class="slds-m-top_small">
+                    </lightning-textarea>
+                </div>
+                
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Cancel" 
+                        onclick={closeModal}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Save" 
+                        variant="brand"
+                        onclick={handleSaveRouter}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+    <!-- Delete Confirmation Modal -->
+    <template if:true={showDeleteModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={closeDeleteModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Delete Router</h2>
+                </header>
+                
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-text-align_center">
+                        <lightning-icon icon-name="utility:warning" variant="warning" size="large"></lightning-icon>
+                    </div>
+                    <p class="slds-m-top_medium">
+                        Are you sure you want to delete the router <strong>{deleteRouterName}</strong>?
+                    </p>
+                    
+                    <div class="slds-m-top_medium">
+                        <lightning-input 
+                            type="checkbox" 
+                            label="Also delete all members in this router"
+                            checked={deleteMembers}
+                            onchange={handleDeleteMembersChange}>
+                        </lightning-input>
+                    </div>
+                    
+                    <p class="slds-text-color_error slds-m-top_small">
+                        This action cannot be undone.
+                    </p>
+                </div>
+                
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Cancel" 
+                        onclick={closeDeleteModal}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Delete" 
+                        variant="destructive"
+                        onclick={handleConfirmDelete}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+    <!-- User Assignment Modal -->
+    <template if:true={showUserAssignmentModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={closeUserAssignmentModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Manage Users - {userAssignmentRouterName}</h2>
+                </header>
+                
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={showUserAssignmentComponent}>
+                        <c-breezy-user-assignment
+                            router-id={userAssignmentRouterId}
+                            router-name={userAssignmentRouterName}
+                            onusersadded={handleUsersAdded}
+                            onusersremoved={handleUsersRemoved}>
+                        </c-breezy-user-assignment>
+                    </template>
+                </div>
+                
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Done" 
+                        variant="brand"
+                        onclick={closeUserAssignmentModal}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
+

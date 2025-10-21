@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UserId__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>User lookup for Member</description>
+    <externalId>false</externalId>
+    <inlineHelpText>User lookup for Member</inlineHelpText>
+    <label>UserId</label>
+    <referenceTo>User</referenceTo>
+    <relationshipName>BreezyRouter_Members</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

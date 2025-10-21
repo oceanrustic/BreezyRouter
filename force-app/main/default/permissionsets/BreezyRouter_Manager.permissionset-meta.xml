@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Manager access to BreezyRouter for user assignment and status management</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>BreezyRouter Manager</label>
+    
+    <!-- Object Permissions -->
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>BreezyRouter__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>BreezyRouter_Member__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    
+    <!-- Field Permissions - BreezyRouter__c -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>BreezyRouter__c.Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Field Permissions - BreezyRouter_Member__c -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>BreezyRouter_Member__c.UserId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>BreezyRouter_Member__c.Routed_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>BreezyRouter_Member__c.Routed_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Apex Class Access -->
+    <classAccesses>
+        <apexClass>BreezyRouter</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    
+    <classAccesses>
+        <apexClass>BreezyRouterController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    
+    <classAccesses>
+        <apexClass>Utility</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+</PermissionSet>
