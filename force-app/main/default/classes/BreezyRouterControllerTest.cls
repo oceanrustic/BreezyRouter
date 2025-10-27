@@ -602,5 +602,332 @@ private class BreezyRouterControllerTest {
         System.assertEquals('Test Label', option.label, 'Label should match');
         System.assertEquals('TestValue', option.value, 'Value should match');
     }
+    
+    // ============================================
+    // STATUS MANAGEMENT TESTS (Sprint 3 Week 5)
+    // ============================================
+    
+    /**
+     * @description Test getRouterMembers method
+     */
+    @isTest
+    static void testGetRouterMembers() {
+        BreezyRouter__c router = [SELECT Id FROM BreezyRouter__c WHERE Name = 'Test Router 1' LIMIT 1];
+        
+        Test.startTest();
+        List<BreezyRouterController.MemberWrapper> members = 
+            BreezyRouterController.getRouterMembers(router.Id);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, members, 'Members should not be null');
+        System.assertEquals(3, members.size(), 'Should return 3 members');
+        System.assertEquals('Active', members[0].status, 'Member status should be Active');
+    }
+    
+    /**
+     * @description Test getRouterMembers with blank router ID
+     */
+    @isTest
+    static void testGetRouterMembersBlankId() {
+        Test.startTest();
+        try {
+            BreezyRouterController.getRouterMembers('');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Router ID is required'), 'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test updateMemberStatus method
+     */
+    @isTest
+    static void testUpdateMemberStatus() {
+        BreezyRouter_Member__c member = [SELECT Id, Status__c FROM BreezyRouter_Member__c LIMIT 1];
+        System.assertEquals('Active', member.Status__c, 'Initial status should be Active');
+        
+        Test.startTest();
+        String result = BreezyRouterController.updateMemberStatus(
+            member.Id, 
+            'PTO', 
+            'Going on vacation'
+        );
+        Test.stopTest();
+        
+        System.assertEquals('Status updated successfully', result, 'Should return success message');
+        
+        // Verify status was updated
+        member = [SELECT Id, Status__c, Previous_Status__c, Status_Change_Reason__c 
+                  FROM BreezyRouter_Member__c WHERE Id = :member.Id];
+        System.assertEquals('PTO', member.Status__c, 'Status should be updated to PTO');
+        System.assertEquals('Active', member.Previous_Status__c, 'Previous status should be Active');
+        System.assertEquals('Going on vacation', member.Status_Change_Reason__c, 'Reason should be saved');
+    }
+    
+    /**
+     * @description Test updateMemberStatus with blank member ID
+     */
+    @isTest
+    static void testUpdateMemberStatusBlankId() {
+        Test.startTest();
+        try {
+            BreezyRouterController.updateMemberStatus('', 'PTO', 'Test');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Member ID and status are required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test updateMemberStatus with blank status
+     */
+    @isTest
+    static void testUpdateMemberStatusBlankStatus() {
+        BreezyRouter_Member__c member = [SELECT Id FROM BreezyRouter_Member__c LIMIT 1];
+        
+        Test.startTest();
+        try {
+            BreezyRouterController.updateMemberStatus(member.Id, '', 'Test');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Member ID and status are required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test bulkUpdateMemberStatus method
+     */
+    @isTest
+    static void testBulkUpdateMemberStatus() {
+        List<BreezyRouter_Member__c> members = [SELECT Id FROM BreezyRouter_Member__c];
+        List<String> memberIds = new List<String>();
+        for (BreezyRouter_Member__c member : members) {
+            memberIds.add(member.Id);
+        }
+        
+        Test.startTest();
+        Integer count = BreezyRouterController.bulkUpdateMemberStatus(
+            memberIds, 
+            'On Leave', 
+            'Team outing'
+        );
+        Test.stopTest();
+        
+        System.assertEquals(3, count, 'Should update 3 members');
+        
+        // Verify all members were updated
+        List<BreezyRouter_Member__c> updatedMembers = 
+            [SELECT Status__c, Previous_Status__c, Status_Change_Reason__c 
+             FROM BreezyRouter_Member__c WHERE Id IN :memberIds];
+        
+        for (BreezyRouter_Member__c member : updatedMembers) {
+            System.assertEquals('On Leave', member.Status__c, 'Status should be On Leave');
+            System.assertEquals('Active', member.Previous_Status__c, 'Previous status should be Active');
+            System.assertEquals('Team outing', member.Status_Change_Reason__c, 'Reason should be saved');
+        }
+    }
+    
+    /**
+     * @description Test bulkUpdateMemberStatus with empty list
+     */
+    @isTest
+    static void testBulkUpdateMemberStatusEmptyList() {
+        Test.startTest();
+        try {
+            BreezyRouterController.bulkUpdateMemberStatus(new List<String>(), 'PTO', 'Test');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Member IDs and status are required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test bulkUpdateMemberStatus with blank status
+     */
+    @isTest
+    static void testBulkUpdateMemberStatusBlankStatus() {
+        List<String> memberIds = new List<String>{'testId'};
+        
+        Test.startTest();
+        try {
+            BreezyRouterController.bulkUpdateMemberStatus(memberIds, '', 'Test');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Member IDs and status are required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test bulkUpdateMemberStatus with invalid IDs
+     */
+    @isTest
+    static void testBulkUpdateMemberStatusInvalidIds() {
+        List<String> memberIds = new List<String>{'invalidId123'};
+        
+        Test.startTest();
+        try {
+            BreezyRouterController.bulkUpdateMemberStatus(memberIds, 'PTO', 'Test');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('No members found'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test getStatusHistory method
+     */
+    @isTest
+    static void testGetStatusHistory() {
+        BreezyRouter__c router = [SELECT Id FROM BreezyRouter__c WHERE Name = 'Test Router 1' LIMIT 1];
+        BreezyRouter_Member__c member = [SELECT Id FROM BreezyRouter_Member__c LIMIT 1];
+        
+        // Update a member status to create history
+        BreezyRouterController.updateMemberStatus(member.Id, 'PTO', 'Test history');
+        
+        Test.startTest();
+        List<BreezyRouterController.StatusHistoryWrapper> history = 
+            BreezyRouterController.getStatusHistory(router.Id);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, history, 'History should not be null');
+        System.assertEquals(1, history.size(), 'Should return 1 history record');
+        System.assertEquals('Active', history[0].oldStatus, 'Old status should be Active');
+        System.assertEquals('PTO', history[0].newStatus, 'New status should be PTO');
+        System.assertEquals('Test history', history[0].reason, 'Reason should match');
+    }
+    
+    /**
+     * @description Test getStatusHistory with blank router ID
+     */
+    @isTest
+    static void testGetStatusHistoryBlankId() {
+        Test.startTest();
+        try {
+            BreezyRouterController.getStatusHistory('');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Router ID is required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test getMemberStatusCounts method
+     */
+    @isTest
+    static void testGetMemberStatusCounts() {
+        BreezyRouter__c router = [SELECT Id FROM BreezyRouter__c WHERE Name = 'Test Router 1' LIMIT 1];
+        
+        Test.startTest();
+        Map<String, Integer> statusCounts = 
+            BreezyRouterController.getMemberStatusCounts(router.Id);
+        Test.stopTest();
+        
+        System.assertNotEquals(null, statusCounts, 'Status counts should not be null');
+        System.assertEquals(3, statusCounts.get('Active'), 'Should have 3 active members');
+        System.assertEquals(0, statusCounts.get('PTO'), 'Should have 0 PTO members');
+        System.assertEquals(0, statusCounts.get('On Leave'), 'Should have 0 On Leave members');
+        System.assertEquals(0, statusCounts.get('Other'), 'Should have 0 Other members');
+    }
+    
+    /**
+     * @description Test getMemberStatusCounts with blank router ID
+     */
+    @isTest
+    static void testGetMemberStatusCountsBlankId() {
+        Test.startTest();
+        try {
+            BreezyRouterController.getMemberStatusCounts('');
+            System.assert(false, 'Should have thrown exception');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Router ID is required'), 
+                         'Should throw proper error');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test getMemberStatusCounts with mixed statuses
+     */
+    @isTest
+    static void testGetMemberStatusCountsMixed() {
+        BreezyRouter__c router = [SELECT Id FROM BreezyRouter__c WHERE Name = 'Test Router 1' LIMIT 1];
+        List<BreezyRouter_Member__c> members = [SELECT Id FROM BreezyRouter_Member__c LIMIT 3];
+        
+        // Update members to different statuses
+        if (members.size() >= 3) {
+            BreezyRouterController.updateMemberStatus(members[0].Id, 'PTO', 'Test');
+            BreezyRouterController.updateMemberStatus(members[1].Id, 'On Leave', 'Test');
+            // Keep members[2] as Active
+        }
+        
+        Test.startTest();
+        Map<String, Integer> statusCounts = 
+            BreezyRouterController.getMemberStatusCounts(router.Id);
+        Test.stopTest();
+        
+        System.assertEquals(1, statusCounts.get('Active'), 'Should have 1 active member');
+        System.assertEquals(1, statusCounts.get('PTO'), 'Should have 1 PTO member');
+        System.assertEquals(1, statusCounts.get('On Leave'), 'Should have 1 On Leave member');
+    }
+    
+    /**
+     * @description Test MemberWrapper class
+     */
+    @isTest
+    static void testMemberWrapper() {
+        BreezyRouterController.MemberWrapper wrapper = new BreezyRouterController.MemberWrapper();
+        wrapper.id = 'memberId';
+        wrapper.userId = 'userId';
+        wrapper.userName = 'Test User';
+        wrapper.userEmail = 'test@test.com';
+        wrapper.userUsername = 'testuser@test.com';
+        wrapper.department = 'IT';
+        wrapper.profileName = 'System Administrator';
+        wrapper.status = 'Active';
+        wrapper.previousStatus = 'PTO';
+        wrapper.statusChangedDate = System.now();
+        wrapper.statusChangedBy = UserInfo.getUserId();
+        wrapper.statusChangeReason = 'Back from vacation';
+        
+        System.assertEquals('memberId', wrapper.id, 'Member ID should match');
+        System.assertEquals('Test User', wrapper.userName, 'User name should match');
+        System.assertEquals('Active', wrapper.status, 'Status should match');
+        System.assertEquals('PTO', wrapper.previousStatus, 'Previous status should match');
+        System.assertEquals('Back from vacation', wrapper.statusChangeReason, 'Reason should match');
+    }
+    
+    /**
+     * @description Test StatusHistoryWrapper class
+     */
+    @isTest
+    static void testStatusHistoryWrapper() {
+        BreezyRouterController.StatusHistoryWrapper wrapper = 
+            new BreezyRouterController.StatusHistoryWrapper();
+        wrapper.memberName = 'Test User';
+        wrapper.oldStatus = 'Active';
+        wrapper.newStatus = 'PTO';
+        wrapper.changedDate = System.now();
+        wrapper.changedBy = 'Admin User';
+        wrapper.reason = 'Going on vacation';
+        
+        System.assertEquals('Test User', wrapper.memberName, 'Member name should match');
+        System.assertEquals('Active', wrapper.oldStatus, 'Old status should match');
+        System.assertEquals('PTO', wrapper.newStatus, 'New status should match');
+        System.assertEquals('Admin User', wrapper.changedBy, 'Changed by should match');
+        System.assertEquals('Going on vacation', wrapper.reason, 'Reason should match');
+    }
 }
 

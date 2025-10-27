@@ -1,0 +1,264 @@
+<template>
+    <!-- Main Modal -->
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+        <div class="slds-modal__container">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                        title="Close" 
+                        onclick={handleClose}>
+                    <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 class="slds-modal__title slds-hyphenate">{modalHeader}</h2>
+            </header>
+            
+            <!-- Modal Content -->
+            <div class="slds-modal__content slds-p-around_medium">
+                
+                <!-- Status Summary Cards -->
+                <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                    <div class="slds-col slds-size_1-of-4">
+                        <div class="slds-box slds-theme_shade slds-text-align_center">
+                            <div class="slds-text-heading_large slds-text-color_success">{activeCount}</div>
+                            <div class="slds-text-body_small">Active</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4">
+                        <div class="slds-box slds-theme_shade slds-text-align_center">
+                            <div class="slds-text-heading_large">{ptoCount}</div>
+                            <div class="slds-text-body_small">PTO</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4">
+                        <div class="slds-box slds-theme_shade slds-text-align_center">
+                            <div class="slds-text-heading_large slds-text-color_weak">{onLeaveCount}</div>
+                            <div class="slds-text-body_small">On Leave</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4">
+                        <div class="slds-box slds-theme_shade slds-text-align_center">
+                            <div class="slds-text-heading_large">{otherCount}</div>
+                            <div class="slds-text-body_small">Other</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Status Change Buttons -->
+                <div class="slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_x-small">Quick Status Change</h3>
+                    <div class="slds-button-group" role="group">
+                        <button class="slds-button slds-button_success" 
+                                data-status="Active"
+                                onclick={handleQuickStatusChange}
+                                disabled={buttonsDisabled}>
+                            <lightning-icon icon-name="utility:check" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            Set Active
+                        </button>
+                        <button class="slds-button slds-button_neutral" 
+                                data-status="PTO"
+                                onclick={handleQuickStatusChange}
+                                disabled={buttonsDisabled}>
+                            <lightning-icon icon-name="utility:away" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            Set PTO
+                        </button>
+                        <button class="slds-button slds-button_neutral" 
+                                data-status="On Leave"
+                                onclick={handleQuickStatusChange}
+                                disabled={buttonsDisabled}>
+                            <lightning-icon icon-name="utility:block_visitor" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            Set On Leave
+                        </button>
+                        <button class="slds-button slds-button_neutral" 
+                                data-status="Other"
+                                onclick={handleQuickStatusChange}
+                                disabled={buttonsDisabled}>
+                            <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            Set Other
+                        </button>
+                    </div>
+                    <div class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        <template if:true={hasSelectedMembers}>
+                            <lightning-icon icon-name="utility:check" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                            {selectedCount} member(s) selected - click a status button to update
+                        </template>
+                        <template if:false={hasSelectedMembers}>
+                            <lightning-icon icon-name="utility:info" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                            Select members below, then click a status button to update
+                        </template>
+                    </div>
+                </div>
+                
+                <!-- Search and Actions -->
+                <div class="slds-grid slds-grid_vertical-align-end slds-gutters slds-m-bottom_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input 
+                            type="search" 
+                            label="Search Members" 
+                            value={searchTerm}
+                            onchange={handleSearchChange}
+                            placeholder="Search by name, email, or department">
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-text-align_right">
+                            <button class="slds-button slds-button_neutral" 
+                                    onclick={handleViewHistory}>
+                                <lightning-icon icon-name="utility:record" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                View History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Selected Count -->
+                <template if:true={hasSelectedMembers}>
+                    <div class="slds-box slds-theme_success slds-m-bottom_small">
+                        <div class="slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-icon icon-name="utility:check" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                <strong>{selectedCount}</strong> member(s) selected for status change
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                                <button class="slds-button slds-button_small slds-button_neutral" 
+                                        onclick={handleClearSelection}>
+                                    <lightning-icon icon-name="utility:clear" size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Clear Selection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                
+                <!-- Members Data Table -->
+                <lightning-datatable
+                    key-field="id"
+                    data={filteredMembers}
+                    columns={memberColumns}
+                    onrowselection={handleRowSelection}
+                    show-row-number-column>
+                </lightning-datatable>
+                
+                <!-- Bulk Update Section -->
+                <template if:true={hasSelectedMembers}>
+                    <div class="slds-box slds-m-top_medium">
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Bulk Status Update</h3>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-3">
+                                <lightning-combobox
+                                    label="New Status"
+                                    value={bulkStatus}
+                                    options={statusOptions}
+                                    onchange={handleBulkStatusChange}
+                                    required>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_2-of-3">
+                                <lightning-input
+                                    type="text"
+                                    label="Reason (Optional)"
+                                    value={bulkReason}
+                                    onchange={handleBulkReasonChange}
+                                    placeholder="Enter reason for status change">
+                                </lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-m-top_small">
+                            <button class="slds-button slds-button_brand" 
+                                    onclick={handleBulkUpdate}>
+                                <lightning-icon icon-name="utility:sync" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                Update Selected ({selectedCount})
+                            </button>
+                        </div>
+                    </div>
+                </template>
+                
+            </div>
+            
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={handleClose}>Done</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    
+    <!-- Confirmation Dialog -->
+    <template if:true={showConfirmDialog}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open confirmation-modal-wrapper">
+            <div class="confirmation-modal">
+                <div class="confirmation-header">
+                    <lightning-icon icon-name="utility:warning" size="small" variant="warning"></lightning-icon>
+                    <h3 class="confirmation-title">Confirm Status Change</h3>
+                </div>
+                <div class="confirmation-content">
+                    <p class="confirmation-message">
+                        Change status of <strong>{selectedCount}</strong> member(s) to <strong>{bulkStatus}</strong>?
+                    </p>
+                    <p class="confirmation-note">This will be recorded in the audit trail.</p>
+                </div>
+                <div class="confirmation-actions">
+                    <button class="slds-button slds-button_neutral" onclick={handleCancelStatusChange}>Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={handleConfirmStatusChange}>Confirm</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+    <!-- Status History Modal -->
+    <template if:true={showHistoryModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container slds-modal__container_large history-modal">
+                <header class="slds-modal__header slds-modal__header_shade">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            onclick={handleCloseHistory}>
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">Status Change History</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={hasStatusHistory}>
+                        <template for:each={statusHistory} for:item="history">
+                            <div key={history.changedDate} class="slds-box slds-m-bottom_small">
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <strong>{history.memberName}</strong>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                                        <span class="slds-badge">{history.oldStatus}</span>
+                                        <lightning-icon icon-name="utility:forward" size="xx-small" class="slds-m-horizontal_x-small"></lightning-icon>
+                                        <span class="slds-badge slds-theme_success">{history.newStatus}</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2 slds-text-align_right slds-m-top_x-small">
+                                        <lightning-formatted-date-time value={history.changedDate}></lightning-formatted-date-time>
+                                    </div>
+                                    <template if:true={history.changedBy}>
+                                        <div class="slds-col slds-size_1-of-1 slds-m-top_x-small slds-text-color_weak">
+                                            Changed by: {history.changedBy}
+                                        </div>
+                                    </template>
+                                    <template if:true={history.reason}>
+                                        <div class="slds-col slds-size_1-of-1 slds-m-top_x-small slds-text-color_weak">
+                                            Reason: {history.reason}
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                    <template if:false={hasStatusHistory}>
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <p class="slds-text-color_weak">No status change history found</p>
+                        </div>
+                    </template>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={handleCloseHistory}>Close</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
+

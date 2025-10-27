@@ -198,5 +198,16 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
+    
+    <!-- Status Manager Modal -->
+    <template if:true={showStatusManagerModal}>
+        <template if:true={showStatusManagerComponent}>
+            <c-breezy-status-manager
+                router-id={statusManagerRouterId}
+                router-name={statusManagerRouterName}
+                onclose={closeStatusManagerModal}>
+            </c-breezy-status-manager>
+        </template>
+    </template>
 </template>
 

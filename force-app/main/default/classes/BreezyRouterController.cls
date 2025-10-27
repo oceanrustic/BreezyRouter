@@ -49,6 +49,8 @@ public with sharing class BreezyRouterController {
             }
             
             return wrappers;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving routers: ' + e.getMessage());
         }
@@ -103,6 +105,8 @@ public with sharing class BreezyRouterController {
             }
             
             return wrappers;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error searching routers: ' + e.getMessage());
         }
@@ -118,7 +122,9 @@ public with sharing class BreezyRouterController {
     public static String createRouter(String name, String description) {
         try {
             if (String.isBlank(name)) {
-                throw new AuraHandledException('Router name is required');
+                AuraHandledException e = new AuraHandledException('Router name is required');
+                e.setMessage('Router name is required');
+                throw e;
             }
             
             // Check for duplicate names
@@ -129,7 +135,9 @@ public with sharing class BreezyRouterController {
             ];
             
             if (!existing.isEmpty()) {
-                throw new AuraHandledException('A router with this name already exists');
+                AuraHandledException e = new AuraHandledException('A router with this name already exists');
+                e.setMessage('A router with this name already exists');
+                throw e;
             }
             
             BreezyRouter__c router = new BreezyRouter__c(
@@ -141,8 +149,6 @@ public with sharing class BreezyRouterController {
             return router.Id;
         } catch (DmlException e) {
             throw new AuraHandledException('Error creating router: ' + e.getDmlMessage(0));
-        } catch (Exception e) {
-            throw new AuraHandledException('Error creating router: ' + e.getMessage());
         }
     }
     
@@ -156,7 +162,9 @@ public with sharing class BreezyRouterController {
     public static void updateRouter(String routerId, String name, String description) {
         try {
             if (String.isBlank(routerId) || String.isBlank(name)) {
-                throw new AuraHandledException('Router ID and name are required');
+                AuraHandledException e = new AuraHandledException('Router ID and name are required');
+                e.setMessage('Router ID and name are required');
+                throw e;
             }
             
             // Check for duplicate names (excluding current router)
@@ -168,7 +176,9 @@ public with sharing class BreezyRouterController {
             ];
             
             if (!existing.isEmpty()) {
-                throw new AuraHandledException('A router with this name already exists');
+                AuraHandledException e = new AuraHandledException('A router with this name already exists');
+                e.setMessage('A router with this name already exists');
+                throw e;
             }
             
             BreezyRouter__c router = new BreezyRouter__c(
@@ -180,8 +190,6 @@ public with sharing class BreezyRouterController {
             update router;
         } catch (DmlException e) {
             throw new AuraHandledException('Error updating router: ' + e.getDmlMessage(0));
-        } catch (Exception e) {
-            throw new AuraHandledException('Error updating router: ' + e.getMessage());
         }
     }
     
@@ -194,7 +202,9 @@ public with sharing class BreezyRouterController {
     public static void deleteRouter(String routerId, Boolean deleteMembers) {
         try {
             if (String.isBlank(routerId)) {
-                throw new AuraHandledException('Router ID is required');
+                AuraHandledException e = new AuraHandledException('Router ID is required');
+                e.setMessage('Router ID is required');
+                throw e;
             }
             
             if (deleteMembers) {
@@ -213,8 +223,6 @@ public with sharing class BreezyRouterController {
             delete router;
         } catch (DmlException e) {
             throw new AuraHandledException('Error deleting router: ' + e.getDmlMessage(0));
-        } catch (Exception e) {
-            throw new AuraHandledException('Error deleting router: ' + e.getMessage());
         }
     }
     
@@ -227,7 +235,9 @@ public with sharing class BreezyRouterController {
     public static RouterDetailWrapper getRouterDetails(String routerId) {
         try {
             if (String.isBlank(routerId)) {
-                throw new AuraHandledException('Router ID is required');
+                AuraHandledException e = new AuraHandledException('Router ID is required');
+                e.setMessage('Router ID is required');
+                throw e;
             }
             
             List<BreezyRouter__c> routers = [
@@ -238,7 +248,9 @@ public with sharing class BreezyRouterController {
             ];
             
             if (routers.isEmpty()) {
-                throw new AuraHandledException('Router not found');
+                AuraHandledException e = new AuraHandledException('Router not found');
+                e.setMessage('Router not found');
+                throw e;
             }
             
             BreezyRouter__c router = routers[0];
@@ -300,6 +312,8 @@ public with sharing class BreezyRouterController {
             }
             
             return wrapper;
+        } catch (AuraHandledException e) {
+            throw e;  // Re-throw validation errors without wrapping
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving router details: ' + e.getMessage());
         }
@@ -333,7 +347,7 @@ public with sharing class BreezyRouterController {
     }
     
     /**
-     * @description Wrapper class for member data
+     * @description Wrapper class for member data (includes routing and status information)
      */
     public class MemberWrapper {
         @AuraEnabled public String id;
@@ -341,7 +355,14 @@ public with sharing class BreezyRouterController {
         @AuraEnabled public String userName;
         @AuraEnabled public String userEmail;
         @AuraEnabled public Boolean userActive;
+        @AuraEnabled public String userUsername;
+        @AuraEnabled public String department;
+        @AuraEnabled public String profileName;
         @AuraEnabled public String status;
+        @AuraEnabled public String previousStatus;
+        @AuraEnabled public Datetime statusChangedDate;
+        @AuraEnabled public String statusChangedBy;
+        @AuraEnabled public String statusChangeReason;
         @AuraEnabled public DateTime routedDate;
         @AuraEnabled public Time routedTime;
         @AuraEnabled public DateTime createdDate;
@@ -405,6 +426,8 @@ public with sharing class BreezyRouterController {
             }
             
             return userWrappers;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error searching users: ' + e.getMessage());
         }
@@ -417,10 +440,10 @@ public with sharing class BreezyRouterController {
      */
     @AuraEnabled(cacheable=false)
     public static List<String> getRouterMemberUserIds(String routerId) {
+        if (String.isBlank(routerId)) {
+            return new List<String>();
+        }
         try {
-            if (String.isBlank(routerId)) {
-                return new List<String>();
-            }
             
             List<String> userIds = new List<String>();
             List<BreezyRouter_Member__c> members = [
@@ -436,6 +459,8 @@ public with sharing class BreezyRouterController {
             }
             
             return userIds;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving router members: ' + e.getMessage());
         }
@@ -451,7 +476,9 @@ public with sharing class BreezyRouterController {
     public static Integer addUsersToRouter(String routerId, List<String> userIds) {
         try {
             if (String.isBlank(routerId) || userIds == null || userIds.isEmpty()) {
-                throw new AuraHandledException('Router ID and user IDs are required');
+                AuraHandledException e = new AuraHandledException('Router ID and user IDs are required');
+                e.setMessage('Router ID and user IDs are required');
+                throw e;
             }
             
             // Get existing members to avoid duplicates
@@ -484,6 +511,8 @@ public with sharing class BreezyRouterController {
             }
             
             return newMembers.size();
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (DmlException e) {
             throw new AuraHandledException('Error adding users to router: ' + e.getDmlMessage(0));
         } catch (Exception e) {
@@ -501,7 +530,9 @@ public with sharing class BreezyRouterController {
     public static Integer removeUsersFromRouter(String routerId, List<String> userIds) {
         try {
             if (String.isBlank(routerId) || userIds == null || userIds.isEmpty()) {
-                throw new AuraHandledException('Router ID and user IDs are required');
+                AuraHandledException e = new AuraHandledException('Router ID and user IDs are required');
+                e.setMessage('Router ID and user IDs are required');
+                throw e;
             }
             
             List<BreezyRouter_Member__c> membersToDelete = [
@@ -516,6 +547,8 @@ public with sharing class BreezyRouterController {
             }
             
             return membersToDelete.size();
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (DmlException e) {
             throw new AuraHandledException('Error removing users from router: ' + e.getDmlMessage(0));
         } catch (Exception e) {
@@ -543,6 +576,8 @@ public with sharing class BreezyRouterController {
             }
             
             return options;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving user roles: ' + e.getMessage());
         }
@@ -569,9 +604,502 @@ public with sharing class BreezyRouterController {
             }
             
             return options;
+        } catch (AuraHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw new AuraHandledException('Error retrieving user profiles: ' + e.getMessage());
         }
+    }
+    
+    /**
+     * @description Get all members for a specific router with their status
+     * @param routerId The router ID
+     * @return List of router members
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<MemberWrapper> getRouterMembers(String routerId) {
+        try {
+            if (String.isBlank(routerId)) {
+                AuraHandledException e = new AuraHandledException('Router ID is required');
+                e.setMessage('Router ID is required');
+                throw e;
+            }
+            
+            List<MemberWrapper> wrappers = new List<MemberWrapper>();
+            
+            List<BreezyRouter_Member__c> members = [
+                SELECT Id, UserId__c, Status__c, Previous_Status__c, 
+                       Status_Changed_Date__c, Status_Changed_By__c, Status_Changed_By__r.Name,
+                       Status_Change_Reason__c, UserId__r.Name, UserId__r.Email,
+                       UserId__r.Username, UserId__r.Department, UserId__r.Profile.Name
+                FROM BreezyRouter_Member__c
+                WHERE BreezyRouter__c = :routerId
+                ORDER BY UserId__r.Name ASC
+            ];
+            
+            for (BreezyRouter_Member__c member : members) {
+                MemberWrapper wrapper = new MemberWrapper();
+                wrapper.id = member.Id;
+                wrapper.userId = member.UserId__c;
+                wrapper.userName = member.UserId__r.Name;
+                wrapper.userEmail = member.UserId__r.Email;
+                wrapper.userUsername = member.UserId__r.Username;
+                wrapper.department = member.UserId__r.Department;
+                wrapper.profileName = member.UserId__r.Profile.Name;
+                wrapper.status = member.Status__c;
+                wrapper.previousStatus = member.Previous_Status__c;
+                wrapper.statusChangedDate = member.Status_Changed_Date__c;
+                wrapper.statusChangedBy = member.Status_Changed_By__r != null ? member.Status_Changed_By__r.Name : null;
+                wrapper.statusChangeReason = member.Status_Change_Reason__c;
+                wrappers.add(wrapper);
+            }
+            
+            return wrappers;
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving router members: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Update status for a single member with audit trail
+     * @param memberId The member ID
+     * @param newStatus The new status value
+     * @param reason Optional reason for the status change
+     * @return Success message
+     */
+    @AuraEnabled
+    public static String updateMemberStatus(String memberId, String newStatus, String reason) {
+        try {
+            if (String.isBlank(memberId) || String.isBlank(newStatus)) {
+                AuraHandledException e = new AuraHandledException('Member ID and status are required');
+                e.setMessage('Member ID and status are required');
+                throw e;
+            }
+            
+            BreezyRouter_Member__c member = [
+                SELECT Id, Status__c, Previous_Status__c
+                FROM BreezyRouter_Member__c
+                WHERE Id = :memberId
+                LIMIT 1
+            ];
+            
+            // Update audit trail fields
+            member.Previous_Status__c = member.Status__c;
+            member.Status__c = newStatus;
+            member.Status_Changed_Date__c = System.now();
+            member.Status_Changed_By__c = UserInfo.getUserId();
+            member.Status_Change_Reason__c = reason;
+            
+            update member;
+            
+            return 'Status updated successfully';
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (DmlException e) {
+            throw new AuraHandledException('Error updating member status: ' + e.getDmlMessage(0));
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating member status: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Bulk update status for multiple members
+     * @param memberIds List of member IDs
+     * @param newStatus The new status value
+     * @param reason Optional reason for the status change
+     * @return Number of members updated
+     */
+    @AuraEnabled
+    public static Integer bulkUpdateMemberStatus(List<String> memberIds, String newStatus, String reason) {
+        try {
+            if (memberIds == null || memberIds.isEmpty() || String.isBlank(newStatus)) {
+                AuraHandledException e = new AuraHandledException('Member IDs and status are required');
+                e.setMessage('Member IDs and status are required');
+                throw e;
+            }
+            
+            List<BreezyRouter_Member__c> members = [
+                SELECT Id, Status__c, Previous_Status__c
+                FROM BreezyRouter_Member__c
+                WHERE Id IN :memberIds
+            ];
+            
+            if (members.isEmpty()) {
+                AuraHandledException e = new AuraHandledException('No members found with provided IDs');
+                e.setMessage('No members found with provided IDs');
+                throw e;
+            }
+            
+            // Update all members with audit trail
+            Datetime now = System.now();
+            String userId = UserInfo.getUserId();
+            
+            for (BreezyRouter_Member__c member : members) {
+                member.Previous_Status__c = member.Status__c;
+                member.Status__c = newStatus;
+                member.Status_Changed_Date__c = now;
+                member.Status_Changed_By__c = userId;
+                member.Status_Change_Reason__c = reason;
+            }
+            
+            update members;
+            
+            return members.size();
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (DmlException e) {
+            throw new AuraHandledException('Error updating member statuses: ' + e.getDmlMessage(0));
+        } catch (Exception e) {
+            throw new AuraHandledException('Error updating member statuses: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Get status history for members in a router
+     * @param routerId The router ID
+     * @return List of history records
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<StatusHistoryWrapper> getStatusHistory(String routerId) {
+        try {
+            if (String.isBlank(routerId)) {
+                AuraHandledException e = new AuraHandledException('Router ID is required');
+                e.setMessage('Router ID is required');
+                throw e;
+            }
+            
+            List<StatusHistoryWrapper> historyList = new List<StatusHistoryWrapper>();
+            
+            // First, get history from our custom audit fields
+            List<BreezyRouter_Member__c> members = [
+                SELECT Id, UserId__r.Name, Status__c, Previous_Status__c,
+                       Status_Changed_Date__c, Status_Changed_By__r.Name,
+                       Status_Change_Reason__c
+                FROM BreezyRouter_Member__c
+                WHERE BreezyRouter__c = :routerId
+                AND Status_Changed_Date__c != null
+                ORDER BY Status_Changed_Date__c DESC
+                LIMIT 50
+            ];
+            
+            for (BreezyRouter_Member__c member : members) {
+                StatusHistoryWrapper history = new StatusHistoryWrapper();
+                history.memberName = member.UserId__r.Name;
+                history.oldStatus = member.Previous_Status__c;
+                history.newStatus = member.Status__c;
+                history.changedDate = member.Status_Changed_Date__c;
+                history.changedBy = member.Status_Changed_By__r != null ? member.Status_Changed_By__r.Name : '';
+                history.reason = member.Status_Change_Reason__c;
+                historyList.add(history);
+            }
+            
+            // Also get history from standard field history tracking
+            List<BreezyRouter_Member__History> fieldHistory = [
+                SELECT ParentId, Field, OldValue, NewValue, CreatedDate, CreatedBy.Name
+                FROM BreezyRouter_Member__History
+                WHERE Parent.BreezyRouter__c = :routerId
+                AND Field = 'Status__c'
+                ORDER BY CreatedDate DESC
+                LIMIT 50
+            ];
+            
+            for (BreezyRouter_Member__History history : fieldHistory) {
+                // Check if we already have this record from custom fields
+                Boolean alreadyExists = false;
+                for (StatusHistoryWrapper existing : historyList) {
+                    if (existing.memberName == history.CreatedBy.Name && 
+                        existing.changedDate == history.CreatedDate) {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+                
+                if (!alreadyExists) {
+                    StatusHistoryWrapper historyWrapper = new StatusHistoryWrapper();
+                    historyWrapper.memberName = history.CreatedBy.Name;
+                    historyWrapper.oldStatus = String.valueOf(history.OldValue);
+                    historyWrapper.newStatus = String.valueOf(history.NewValue);
+                    historyWrapper.changedDate = history.CreatedDate;
+                    historyWrapper.changedBy = history.CreatedBy.Name;
+                    historyWrapper.reason = 'Status changed via field history';
+                    historyList.add(historyWrapper);
+                }
+            }
+            
+            // Sort by date descending
+            historyList.sort(new StatusHistoryComparator());
+            
+            return historyList;
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving status history: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Get status breakdown counts for a router
+     * @param routerId The router ID
+     * @return Map of status to count
+     */
+    @AuraEnabled(cacheable=true)
+    public static Map<String, Integer> getMemberStatusCounts(String routerId) {
+        try {
+            if (String.isBlank(routerId)) {
+                AuraHandledException e = new AuraHandledException('Router ID is required');
+                e.setMessage('Router ID is required');
+                throw e;
+            }
+            
+            Map<String, Integer> statusCounts = new Map<String, Integer>{
+                'Active' => 0,
+                'PTO' => 0,
+                'On Leave' => 0,
+                'Other' => 0
+            };
+            
+            List<BreezyRouter_Member__c> members = [
+                SELECT Status__c
+                FROM BreezyRouter_Member__c
+                WHERE BreezyRouter__c = :routerId
+            ];
+            
+            for (BreezyRouter_Member__c member : members) {
+                if (statusCounts.containsKey(member.Status__c)) {
+                    statusCounts.put(member.Status__c, statusCounts.get(member.Status__c) + 1);
+                }
+            }
+            
+            return statusCounts;
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving status counts: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Wrapper class for status history data
+     */
+    public class StatusHistoryWrapper {
+        @AuraEnabled public String memberName;
+        @AuraEnabled public String oldStatus;
+        @AuraEnabled public String newStatus;
+        @AuraEnabled public Datetime changedDate;
+        @AuraEnabled public String changedBy;
+        @AuraEnabled public String reason;
+    }
+    
+    /**
+     * @description Get comprehensive dashboard statistics
+     * @return DashboardStatsWrapper with key metrics
+     */
+    @AuraEnabled(cacheable=true)
+    public static DashboardStatsWrapper getDashboardStats() {
+        try {
+            DashboardStatsWrapper stats = new DashboardStatsWrapper();
+            
+            // Total routers count
+            stats.totalRouters = [SELECT COUNT() FROM BreezyRouter__c];
+            
+            // Total members count
+            stats.totalMembers = [SELECT COUNT() FROM BreezyRouter_Member__c];
+            
+            // Active members count
+            stats.activeMembers = [SELECT COUNT() FROM BreezyRouter_Member__c WHERE Status__c = 'Active'];
+            
+            // Inactive members count (PTO, On Leave, Other)
+            stats.inactiveMembers = [SELECT COUNT() FROM BreezyRouter_Member__c WHERE Status__c != 'Active'];
+            
+            // Total routings count (based on Routed_Date__c)
+            stats.totalRoutings = [SELECT COUNT() FROM BreezyRouter_Member__c WHERE Routed_Date__c != null];
+            
+            // Calculate average routings per day (last 30 days)
+            Date thirtyDaysAgo = Date.today().addDays(-30);
+            Integer routingsLast30Days = [SELECT COUNT() FROM BreezyRouter_Member__c 
+                                        WHERE Routed_Date__c >= :thirtyDaysAgo];
+            stats.averageRoutingsPerDay = Math.round(routingsLast30Days / 30.0);
+            
+            return stats;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving dashboard stats: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Get router analytics data
+     * @param timeRange Number of days to analyze
+     * @return List of RouterAnalyticsWrapper
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<RouterAnalyticsWrapper> getRouterAnalytics(String timeRange) {
+        try {
+            Integer days = Integer.valueOf(timeRange);
+            Date startDate = Date.today().addDays(-days);
+            
+            List<RouterAnalyticsWrapper> analytics = new List<RouterAnalyticsWrapper>();
+            
+            // Get all routers with their analytics
+            List<BreezyRouter__c> routers = [
+                SELECT Id, Name, CreatedDate
+                FROM BreezyRouter__c
+                ORDER BY Name
+            ];
+            
+            for (BreezyRouter__c router : routers) {
+                RouterAnalyticsWrapper analyticsItem = new RouterAnalyticsWrapper();
+                analyticsItem.routerId = router.Id;
+                analyticsItem.routerName = router.Name;
+                
+                // Count routings in the time range
+                analyticsItem.routingCount = [SELECT COUNT() FROM BreezyRouter_Member__c 
+                                            WHERE BreezyRouter__c = :router.Id 
+                                            AND Routed_Date__c >= :startDate];
+                
+                // Get last routed date
+                List<BreezyRouter_Member__c> lastRoutedMembers = [
+                    SELECT Routed_Date__c
+                    FROM BreezyRouter_Member__c
+                    WHERE BreezyRouter__c = :router.Id
+                    AND Routed_Date__c != null
+                    ORDER BY Routed_Date__c DESC
+                    LIMIT 1
+                ];
+                
+                if (!lastRoutedMembers.isEmpty()) {
+                    analyticsItem.lastRoutedDate = lastRoutedMembers[0].Routed_Date__c;
+                }
+                
+                analytics.add(analyticsItem);
+            }
+            
+            // Calculate progress percentages
+            Integer maxRoutings = 0;
+            for (RouterAnalyticsWrapper item : analytics) {
+                if (item.routingCount > maxRoutings) {
+                    maxRoutings = item.routingCount;
+                }
+            }
+            
+            for (RouterAnalyticsWrapper item : analytics) {
+                if (maxRoutings > 0) {
+                    Decimal percentage = (item.routingCount * 100.0) / maxRoutings;
+                    item.progressStyle = 'width: ' + percentage + '%;';
+                } else {
+                    item.progressStyle = 'width: 0%;';
+                }
+            }
+            
+            return analytics;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving router analytics: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Get routing frequency data by day of week
+     * @param timeRange Number of days to analyze
+     * @return List of RoutingFrequencyWrapper
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<RoutingFrequencyWrapper> getRoutingFrequency(String timeRange) {
+        try {
+            Integer days = Integer.valueOf(timeRange);
+            Date startDate = Date.today().addDays(-days);
+            
+            List<RoutingFrequencyWrapper> frequency = new List<RoutingFrequencyWrapper>();
+            
+            // Initialize days of week
+            String[] dayNames = new String[]{'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'};
+            
+            for (Integer i = 0; i < 7; i++) {
+                RoutingFrequencyWrapper dayData = new RoutingFrequencyWrapper();
+                dayData.dayName = dayNames[i];
+                dayData.dayOfWeek = i;
+                
+                // Count routings for this day of week in the time range
+                List<AggregateResult> results = [
+                    SELECT COUNT(Id) routingCount
+                    FROM BreezyRouter_Member__c
+                    WHERE Routed_Date__c >= :startDate
+                    AND DAY_IN_WEEK(Routed_Date__c) = :i
+                ];
+                
+                dayData.routingCount = Integer.valueOf(results[0].get('routingCount'));
+                frequency.add(dayData);
+            }
+            
+            // Calculate bar styles
+            Integer maxCount = 0;
+            for (RoutingFrequencyWrapper day : frequency) {
+                if (day.routingCount > maxCount) {
+                    maxCount = day.routingCount;
+                }
+            }
+            
+            for (RoutingFrequencyWrapper day : frequency) {
+                if (maxCount > 0) {
+                    Decimal percentage = (day.routingCount * 100.0) / maxCount;
+                    day.barStyle = 'width: ' + percentage + '%;';
+                } else {
+                    day.barStyle = 'width: 0%;';
+                }
+            }
+            
+            return frequency;
+        } catch (Exception e) {
+            throw new AuraHandledException('Error retrieving routing frequency: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Comparator for sorting status history by date
+     */
+    public class StatusHistoryComparator implements Comparator<StatusHistoryWrapper> {
+        public Integer compare(StatusHistoryWrapper a, StatusHistoryWrapper b) {
+            if (a.changedDate == null && b.changedDate == null) return 0;
+            if (a.changedDate == null) return 1;
+            if (b.changedDate == null) return -1;
+            // Compare dates - newer dates first (descending order)
+            if (a.changedDate > b.changedDate) return -1;
+            if (a.changedDate < b.changedDate) return 1;
+            return 0;
+        }
+    }
+    
+    /**
+     * @description Wrapper class for dashboard statistics
+     */
+    public class DashboardStatsWrapper {
+        @AuraEnabled public Integer totalRouters;
+        @AuraEnabled public Integer totalMembers;
+        @AuraEnabled public Integer activeMembers;
+        @AuraEnabled public Integer inactiveMembers;
+        @AuraEnabled public Integer totalRoutings;
+        @AuraEnabled public Integer averageRoutingsPerDay;
+    }
+    
+    /**
+     * @description Wrapper class for router analytics
+     */
+    public class RouterAnalyticsWrapper {
+        @AuraEnabled public String routerId;
+        @AuraEnabled public String routerName;
+        @AuraEnabled public Integer routingCount;
+        @AuraEnabled public Datetime lastRoutedDate;
+        @AuraEnabled public String progressStyle;
+    }
+    
+    /**
+     * @description Wrapper class for routing frequency data
+     */
+    public class RoutingFrequencyWrapper {
+        @AuraEnabled public String dayName;
+        @AuraEnabled public Integer dayOfWeek;
+        @AuraEnabled public Integer routingCount;
+        @AuraEnabled public String barStyle;
     }
     
     /**

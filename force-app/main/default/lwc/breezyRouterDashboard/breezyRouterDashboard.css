@@ -1,0 +1,227 @@
+/* BreezyRouter Dashboard Styles */
+
+/* Dashboard Header */
+.dashboard-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.metric-icon {
+    opacity: 0.8;
+}
+
+.metric-value {
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 8px 0;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.metric-percentage {
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Chart Containers */
+.chart-container {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-header {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 16px;
+}
+
+.chart-header h3 {
+    margin: 0 0 4px 0;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Router Analytics */
+.router-analytics-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.router-analytics-item:last-child {
+    border-bottom: none;
+}
+
+.router-name {
+    color: #495057;
+    font-weight: 500;
+}
+
+.routing-count {
+    color: #0176d3;
+    font-weight: 600;
+}
+
+.last-routed {
+    font-size: 12px;
+}
+
+.progress-bar {
+    height: 4px;
+    background-color: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0176d3 0%, #5eb3ff 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Routing Frequency */
+.frequency-item {
+    padding: 8px 0;
+}
+
+.day-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.day-count {
+    color: #0176d3;
+    font-weight: 600;
+}
+
+.frequency-bar {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.frequency-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #5cb85c 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Insights Container */
+.insights-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.insights-grid {
+    margin-top: 16px;
+}
+
+.insight-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.insight-item:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-header .slds-grid {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .dashboard-header .slds-grid .slds-col:last-child {
+        margin-top: 16px;
+        width: 100%;
+    }
+    
+    .metric-card {
+        margin-bottom: 16px;
+    }
+    
+    .chart-container {
+        margin-bottom: 16px;
+    }
+}
+
+/* Loading States */
+.slds-spinner_container {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Animation Enhancements */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.metric-card,
+.chart-container,
+.insights-container {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Custom Scrollbar for Charts */
+.analytics-chart,
+.frequency-chart {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.analytics-chart::-webkit-scrollbar,
+.frequency-chart::-webkit-scrollbar {
+    width: 6px;
+}
+
+.analytics-chart::-webkit-scrollbar-track,
+.frequency-chart::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.analytics-chart::-webkit-scrollbar-thumb,
+.frequency-chart::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.analytics-chart::-webkit-scrollbar-thumb:hover,
+.frequency-chart::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

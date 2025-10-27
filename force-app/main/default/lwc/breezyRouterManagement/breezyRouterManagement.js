@@ -33,6 +33,12 @@ export default class BreezyRouterManagement extends LightningElement {
     @track userAssignmentRouterId = '';
     @track userAssignmentRouterName = '';
     
+    // Status management modal state
+    @track showStatusManagerModal = false;
+    @track showStatusManagerComponent = true; // Toggle to recreate component
+    @track statusManagerRouterId = '';
+    @track statusManagerRouterName = '';
+    
     // Wire result for refresh
     wiredRoutersResult;
     
@@ -79,6 +85,7 @@ export default class BreezyRouterManagement extends LightningElement {
             typeAttributes: {
                 rowActions: [
                     { label: 'Manage Users', name: 'manage_users', iconName: 'utility:people' },
+                    { label: 'Manage Status', name: 'manage_status', iconName: 'utility:shield' },
                     { label: 'Edit', name: 'edit', iconName: 'utility:edit' },
                     { label: 'View Details', name: 'view', iconName: 'utility:preview' },
                     { label: 'Delete', name: 'delete', iconName: 'utility:delete' }
@@ -145,6 +152,9 @@ export default class BreezyRouterManagement extends LightningElement {
         switch (action.name) {
             case 'manage_users':
                 this.handleManageUsers(row);
+                break;
+            case 'manage_status':
+                this.handleManageStatus(row);
                 break;
             case 'edit':
                 this.handleEditRouter(row);
@@ -308,6 +318,33 @@ export default class BreezyRouterManagement extends LightningElement {
     handleUsersRemoved(event) {
         // Toast is already shown by child component - no need to duplicate
         // Just silently acknowledge the event
+        // Refresh will happen when modal closes
+    }
+    
+    // Status management modal handlers
+    handleManageStatus(router) {
+        this.statusManagerRouterId = router.id;
+        this.statusManagerRouterName = router.name;
+        
+        // Force component recreation by toggling
+        this.showStatusManagerComponent = false;
+        setTimeout(() => {
+            this.showStatusManagerComponent = true;
+            this.showStatusManagerModal = true;
+        }, 0);
+    }
+    
+    closeStatusManagerModal() {
+        this.showStatusManagerModal = false;
+        this.showStatusManagerComponent = false; // Destroy component
+        this.statusManagerRouterId = '';
+        this.statusManagerRouterName = '';
+        // Refresh router data to show updated member counts
+        return refreshApex(this.wiredRoutersResult);
+    }
+    
+    handleStatusUpdated(event) {
+        // Toast is already shown by child component
         // Refresh will happen when modal closes
     }
     
