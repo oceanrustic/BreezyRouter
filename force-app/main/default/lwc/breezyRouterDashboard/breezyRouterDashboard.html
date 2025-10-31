@@ -1,31 +1,34 @@
 <template>
-    <!-- Dashboard Header -->
-    <div class="dashboard-header slds-m-bottom_large">
+    <!-- Dashboard Controls -->
+    <div class="dashboard-controls slds-m-bottom_medium">
         <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
             <div>
-                <h1 class="slds-text-heading_large slds-text-color_default">BreezyRouter Dashboard</h1>
-                <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
-                    Comprehensive analytics and insights for your routing operations
+                <h2 class="slds-text-heading_medium slds-m-bottom_x-small">Analytics & Insights</h2>
+                <p class="slds-text-body_small slds-text-color_weak">
+                    Comprehensive analytics for your routing operations
                 </p>
             </div>
-            <div class="slds-grid slds-grid_vertical-align-center slds-gutters">
-                <div class="slds-col">
+            <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-gutters">
+                <div class="slds-col slds-no-flex">
                     <lightning-combobox
                         name="timeRange"
                         label="Time Range"
                         value={selectedTimeRange}
                         placeholder="Select time range"
                         options={timeRangeOptions}
-                        onchange={handleTimeRangeChange}>
+                        onchange={handleTimeRangeChange}
+                        variant="label-hidden">
                     </lightning-combobox>
                 </div>
-                <div class="slds-col">
-                    <button class="slds-button slds-button_neutral" 
-                            onclick={handleRefresh}
-                            disabled={isLoading}>
-                        <lightning-icon icon-name="utility:refresh" size="x-small" class="slds-m-right_x-small"></lightning-icon>
-                        Refresh
-                    </button>
+                <div class="slds-col slds-no-flex controls-button">
+                    <lightning-button-icon 
+                        icon-name="utility:refresh" 
+                        alternative-text="Refresh" 
+                        onclick={handleRefresh}
+                        disabled={isLoading}
+                        variant="border-filled"
+                        class="refresh-button">
+                    </lightning-button-icon>
                 </div>
             </div>
         </div>
@@ -50,6 +53,7 @@
                     </div>
                     <div class="metric-value slds-text-heading_large">{totalRouters}</div>
                     <div class="metric-label slds-text-body_small">Total Routers</div>
+                    <div class="metric-percentage"></div>
                 </div>
             </div>
             <div class="slds-col slds-size_1-of-6">
@@ -59,6 +63,7 @@
                     </div>
                     <div class="metric-value slds-text-heading_large">{totalMembers}</div>
                     <div class="metric-label slds-text-body_small">Total Members</div>
+                    <div class="metric-percentage"></div>
                 </div>
             </div>
             <div class="slds-col slds-size_1-of-6">
@@ -88,6 +93,7 @@
                     </div>
                     <div class="metric-value slds-text-heading_large">{totalRoutings}</div>
                     <div class="metric-label slds-text-body_small">Total Routings</div>
+                    <div class="metric-percentage"></div>
                 </div>
             </div>
             <div class="slds-col slds-size_1-of-6">
@@ -97,6 +103,7 @@
                     </div>
                     <div class="metric-value slds-text-heading_large">{averageRoutingsPerDay}</div>
                     <div class="metric-label slds-text-body_small">Avg/Day</div>
+                    <div class="metric-percentage"></div>
                 </div>
             </div>
         </div>

@@ -39,6 +39,9 @@ export default class BreezyRouterManagement extends LightningElement {
     @track statusManagerRouterId = '';
     @track statusManagerRouterName = '';
     
+    // Tab management state
+    @track selectedTab = 'routers'; // 'routers' or 'dashboard'
+    
     // Wire result for refresh
     wiredRoutersResult;
     
@@ -346,6 +349,38 @@ export default class BreezyRouterManagement extends LightningElement {
     handleStatusUpdated(event) {
         // Toast is already shown by child component
         // Refresh will happen when modal closes
+    }
+    
+    // Tab handlers
+    handleTabChange(event) {
+        const tabName = event.currentTarget.dataset.tab;
+        this.selectedTab = tabName;
+        
+        // Refresh dashboard data when switching to dashboard tab
+        if (tabName === 'dashboard') {
+            // Dispatch custom event to refresh dashboard
+            const refreshEvent = new CustomEvent('refreshdashboard', {
+                bubbles: true,
+                composed: true
+            });
+            this.dispatchEvent(refreshEvent);
+        }
+    }
+    
+    get isRoutersTabSelected() {
+        return this.selectedTab === 'routers';
+    }
+    
+    get isDashboardTabSelected() {
+        return this.selectedTab === 'dashboard';
+    }
+    
+    get routerTabClass() {
+        return this.isRoutersTabSelected ? 'slds-tabs_default__link slds-is-active' : 'slds-tabs_default__link';
+    }
+    
+    get dashboardTabClass() {
+        return this.isDashboardTabSelected ? 'slds-tabs_default__link slds-is-active' : 'slds-tabs_default__link';
     }
     
     // Utility: Show toast message

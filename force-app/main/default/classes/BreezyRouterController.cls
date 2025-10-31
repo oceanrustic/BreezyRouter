@@ -630,7 +630,8 @@ public with sharing class BreezyRouterController {
             List<BreezyRouter_Member__c> members = [
                 SELECT Id, UserId__c, Status__c, Previous_Status__c, 
                        Status_Changed_Date__c, Status_Changed_By__c, Status_Changed_By__r.Name,
-                       Status_Change_Reason__c, UserId__r.Name, UserId__r.Email,
+                       Status_Change_Reason__c, Routed_Date__c, Routed_Time__c,
+                       UserId__r.Name, UserId__r.Email,
                        UserId__r.Username, UserId__r.Department, UserId__r.Profile.Name
                 FROM BreezyRouter_Member__c
                 WHERE BreezyRouter__c = :routerId
@@ -651,6 +652,8 @@ public with sharing class BreezyRouterController {
                 wrapper.statusChangedDate = member.Status_Changed_Date__c;
                 wrapper.statusChangedBy = member.Status_Changed_By__r != null ? member.Status_Changed_By__r.Name : null;
                 wrapper.statusChangeReason = member.Status_Change_Reason__c;
+                wrapper.routedDate = member.Routed_Date__c;
+                wrapper.routedTime = member.Routed_Time__c;
                 wrappers.add(wrapper);
             }
             
@@ -1014,9 +1017,10 @@ public with sharing class BreezyRouterController {
             // Initialize days of week
             String[] dayNames = new String[]{'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'};
             
-            for (Integer i = 0; i < 7; i++) {
+            // DAY_IN_WEEK() returns 1 (Sunday) through 7 (Saturday)
+            for (Integer i = 1; i <= 7; i++) {
                 RoutingFrequencyWrapper dayData = new RoutingFrequencyWrapper();
-                dayData.dayName = dayNames[i];
+                dayData.dayName = dayNames[i - 1];
                 dayData.dayOfWeek = i;
                 
                 // Count routings for this day of week in the time range

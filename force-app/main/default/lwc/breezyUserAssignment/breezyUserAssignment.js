@@ -108,6 +108,19 @@ export default class BreezyUserAssignment extends LightningElement {
                 month: 'short',
                 day: '2-digit'
             }
+        },
+        {
+            label: 'Last Routed',
+            fieldName: 'routedDate',
+            type: 'date',
+            typeAttributes: {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            },
+            sortable: true
         }
     ];
     
@@ -185,6 +198,7 @@ export default class BreezyUserAssignment extends LightningElement {
                             username: member.userName,
                             department: '',
                             createdDate: member.createdDate,
+                            routedDate: member.routedDate,
                             memberId: member.id
                         }));
                         this.dataVersion++; // Increment to force refresh

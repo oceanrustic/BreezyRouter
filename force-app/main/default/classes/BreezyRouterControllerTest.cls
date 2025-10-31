@@ -929,5 +929,180 @@ private class BreezyRouterControllerTest {
         System.assertEquals('Admin User', wrapper.changedBy, 'Changed by should match');
         System.assertEquals('Going on vacation', wrapper.reason, 'Reason should match');
     }
+    
+    // ==================== DASHBOARD TESTS ====================
+    
+    /**
+     * @description Test getDashboardStats method
+     */
+    @isTest
+    static void testGetDashboardStats() {
+        Test.startTest();
+        BreezyRouterController.DashboardStatsWrapper stats = 
+            BreezyRouterController.getDashboardStats();
+        Test.stopTest();
+        
+        System.assertNotEquals(null, stats, 'Stats should not be null');
+        System.assert(stats.totalRouters >= 5, 'Should have at least 5 routers from test setup');
+        System.assert(stats.totalMembers >= 3, 'Should have at least 3 members from test setup');
+        System.assert(stats.activeMembers >= 0, 'Active members count should be valid');
+        System.assert(stats.inactiveMembers >= 0, 'Inactive members count should be valid');
+        System.assert(stats.totalRoutings >= 0, 'Total routings should be valid');
+        System.assert(stats.averageRoutingsPerDay >= 0, 'Average routings per day should be valid');
+    }
+    
+    /**
+     * @description Test getRouterAnalytics method with different time ranges
+     */
+    @isTest
+    static void testGetRouterAnalytics() {
+        Test.startTest();
+        List<BreezyRouterController.RouterAnalyticsWrapper> analytics30 = 
+            BreezyRouterController.getRouterAnalytics('30');
+        List<BreezyRouterController.RouterAnalyticsWrapper> analytics90 = 
+            BreezyRouterController.getRouterAnalytics('90');
+        List<BreezyRouterController.RouterAnalyticsWrapper> analytics365 = 
+            BreezyRouterController.getRouterAnalytics('365');
+        Test.stopTest();
+        
+        System.assertNotEquals(null, analytics30, 'Analytics for 30 days should not be null');
+        System.assert(analytics30.size() >= 5, 'Should have analytics for all routers');
+        
+        // Verify each router has analytics
+        for (BreezyRouterController.RouterAnalyticsWrapper router : analytics30) {
+            System.assertNotEquals(null, router.routerId, 'Router ID should not be null');
+            System.assertNotEquals(null, router.routerName, 'Router name should not be null');
+            System.assert(router.routingCount >= 0, 'Routing count should be valid');
+        }
+        
+        // Test different time ranges return data
+        System.assertNotEquals(null, analytics90, 'Analytics for 90 days should not be null');
+        System.assertNotEquals(null, analytics365, 'Analytics for 365 days should not be null');
+    }
+    
+    /**
+     * @description Test getRouterAnalytics with invalid time range
+     */
+    @isTest
+    static void testGetRouterAnalyticsInvalidTimeRange() {
+        Test.startTest();
+        try {
+            List<BreezyRouterController.RouterAnalyticsWrapper> analytics = 
+                BreezyRouterController.getRouterAnalytics('invalid');
+            System.assert(false, 'Should have thrown exception for invalid time range');
+        } catch (Exception e) {
+            System.assert(true, 'Expected exception for invalid time range');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test getRoutingFrequency method
+     */
+    @isTest
+    static void testGetRoutingFrequency() {
+        Test.startTest();
+        List<BreezyRouterController.RoutingFrequencyWrapper> frequency7 = 
+            BreezyRouterController.getRoutingFrequency('7');
+        List<BreezyRouterController.RoutingFrequencyWrapper> frequency30 = 
+            BreezyRouterController.getRoutingFrequency('30');
+        Test.stopTest();
+        
+        System.assertNotEquals(null, frequency7, 'Frequency for 7 days should not be null');
+        System.assertEquals(7, frequency7.size(), 'Should return 7 days of week');
+        
+        // Verify all days of week are present
+        Set<String> dayNames = new Set<String>();
+        for (BreezyRouterController.RoutingFrequencyWrapper day : frequency7) {
+            System.assertNotEquals(null, day.dayName, 'Day name should not be null');
+            System.assert(day.dayOfWeek >= 1 && day.dayOfWeek <= 7, 'Day of week should be 1-7');
+            System.assert(day.routingCount >= 0, 'Routing count should be valid');
+            System.assertNotEquals(null, day.barStyle, 'Bar style should not be null');
+            dayNames.add(day.dayName);
+        }
+        
+        // Verify all 7 days are present
+        System.assertEquals(7, dayNames.size(), 'Should have all 7 days of the week');
+        
+        // Test 30 days range
+        System.assertNotEquals(null, frequency30, 'Frequency for 30 days should not be null');
+        System.assertEquals(7, frequency30.size(), 'Should still return 7 days of week');
+    }
+    
+    /**
+     * @description Test getRoutingFrequency with invalid time range
+     */
+    @isTest
+    static void testGetRoutingFrequencyInvalidTimeRange() {
+        Test.startTest();
+        try {
+            List<BreezyRouterController.RoutingFrequencyWrapper> frequency = 
+                BreezyRouterController.getRoutingFrequency('invalid');
+            System.assert(false, 'Should have thrown exception for invalid time range');
+        } catch (Exception e) {
+            System.assert(true, 'Expected exception for invalid time range');
+        }
+        Test.stopTest();
+    }
+    
+    /**
+     * @description Test DashboardStatsWrapper class
+     */
+    @isTest
+    static void testDashboardStatsWrapper() {
+        BreezyRouterController.DashboardStatsWrapper wrapper = 
+            new BreezyRouterController.DashboardStatsWrapper();
+        wrapper.totalRouters = 10;
+        wrapper.totalMembers = 50;
+        wrapper.activeMembers = 40;
+        wrapper.inactiveMembers = 10;
+        wrapper.totalRoutings = 100;
+        wrapper.averageRoutingsPerDay = 5;
+        
+        System.assertEquals(10, wrapper.totalRouters, 'Total routers should match');
+        System.assertEquals(50, wrapper.totalMembers, 'Total members should match');
+        System.assertEquals(40, wrapper.activeMembers, 'Active members should match');
+        System.assertEquals(10, wrapper.inactiveMembers, 'Inactive members should match');
+        System.assertEquals(100, wrapper.totalRoutings, 'Total routings should match');
+        System.assertEquals(5, wrapper.averageRoutingsPerDay, 'Average routings per day should match');
+    }
+    
+    /**
+     * @description Test RouterAnalyticsWrapper class
+     */
+    @isTest
+    static void testRouterAnalyticsWrapper() {
+        BreezyRouterController.RouterAnalyticsWrapper wrapper = 
+            new BreezyRouterController.RouterAnalyticsWrapper();
+        wrapper.routerId = 'router123';
+        wrapper.routerName = 'Test Router';
+        wrapper.routingCount = 25;
+        wrapper.lastRoutedDate = System.now();
+        wrapper.progressStyle = 'width: 50%;';
+        
+        System.assertEquals('router123', wrapper.routerId, 'Router ID should match');
+        System.assertEquals('Test Router', wrapper.routerName, 'Router name should match');
+        System.assertEquals(25, wrapper.routingCount, 'Routing count should match');
+        System.assertNotEquals(null, wrapper.lastRoutedDate, 'Last routed date should not be null');
+        System.assertEquals('width: 50%;', wrapper.progressStyle, 'Progress style should match');
+    }
+    
+    /**
+     * @description Test RoutingFrequencyWrapper class
+     */
+    @isTest
+    static void testRoutingFrequencyWrapper() {
+        BreezyRouterController.RoutingFrequencyWrapper wrapper = 
+            new BreezyRouterController.RoutingFrequencyWrapper();
+        wrapper.dayName = 'Wednesday';
+        wrapper.dayOfWeek = 4;
+        wrapper.routingCount = 10;
+        wrapper.barStyle = 'width: 100%;';
+        
+        System.assertEquals('Wednesday', wrapper.dayName, 'Day name should match');
+        System.assertEquals(4, wrapper.dayOfWeek, 'Day of week should match');
+        System.assertEquals(10, wrapper.routingCount, 'Routing count should match');
+        System.assertEquals('width: 100%;', wrapper.barStyle, 'Bar style should match');
+    }
 }
 

@@ -2,15 +2,53 @@
     <lightning-card title="BreezyRouter Management" icon-name="custom:custom88">
         <!-- Header Section with Search and Create Button -->
         <div slot="actions">
-            <lightning-button 
-                label="Create Router" 
-                icon-name="utility:add"
-                variant="brand"
-                onclick={handleCreateRouter}>
-            </lightning-button>
+            <template if:true={isRoutersTabSelected}>
+                <lightning-button 
+                    label="Create Router" 
+                    icon-name="utility:add"
+                    variant="brand"
+                    onclick={handleCreateRouter}>
+                </lightning-button>
+            </template>
         </div>
         
-        <div class="slds-card__body slds-card__body_inner">
+        <!-- Tab Navigation -->
+        <div class="slds-card__header slds-grid">
+            <ul class="slds-tabs_default__nav" role="tablist">
+                <li class="slds-tabs_default__item" title="Routers" role="presentation">
+                    <a class={routerTabClass}
+                       role="tab" 
+                       aria-selected={isRoutersTabSelected}
+                       aria-controls="tab-routers"
+                       id="tab-routers__item"
+                       onclick={handleTabChange}
+                       data-tab="routers">
+                        <lightning-icon icon-name="utility:routing" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Routers
+                    </a>
+                </li>
+                <li class="slds-tabs_default__item" title="Dashboard" role="presentation">
+                    <a class={dashboardTabClass}
+                       role="tab" 
+                       aria-selected={isDashboardTabSelected}
+                       aria-controls="tab-dashboard"
+                       id="tab-dashboard__item"
+                       onclick={handleTabChange}
+                       data-tab="dashboard">
+                        <lightning-icon icon-name="utility:dashboard" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Dashboard
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Routers Tab Content -->
+        <div role="tabpanel" 
+             id="tab-routers" 
+             class="slds-tabs_default__content slds-show"
+             aria-labelledby="tab-routers__item"
+             if:true={isRoutersTabSelected}>
+            <div class="slds-card__body slds-card__body_inner">
             <!-- Search Box -->
             <div class="slds-m-bottom_medium">
                 <lightning-input
@@ -54,6 +92,18 @@
                     </lightning-button>
                 </div>
             </template>
+            </div>
+        </div>
+        
+        <!-- Dashboard Tab Content -->
+        <div role="tabpanel" 
+             id="tab-dashboard" 
+             class="slds-tabs_default__content slds-show"
+             aria-labelledby="tab-dashboard__item"
+             if:true={isDashboardTabSelected}>
+            <div class="slds-card__body slds-card__body_inner">
+                <c-breezy-router-dashboard></c-breezy-router-dashboard>
+            </div>
         </div>
     </lightning-card>
     

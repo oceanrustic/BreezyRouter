@@ -48,7 +48,20 @@ const MEMBER_COLUMNS = [
         }
     },
     { 
-        label: 'Changed Date', 
+        label: 'Last Routed', 
+        fieldName: 'routedDate', 
+        type: 'date',
+        typeAttributes: {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        },
+        sortable: true
+    },
+    { 
+        label: 'Status Changed', 
         fieldName: 'statusChangedDate', 
         type: 'date',
         typeAttributes: {
@@ -57,7 +70,8 @@ const MEMBER_COLUMNS = [
             day: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
-        }
+        },
+        sortable: true
     }
 ];
 
